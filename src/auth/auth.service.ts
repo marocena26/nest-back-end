@@ -14,6 +14,8 @@ import * as bcryptjs from 'bcryptjs';
 import { LoginDto } from './dto/login.dto';
 import { JwtService } from '@nestjs/jwt';
 import { JwtPayload } from './interfaces/jwt-payload';
+import { LoginResponse } from './interfaces/login-response';
+import { RegisterUserDto } from './dto/register.dto';
 
 @Injectable()
 export class AuthService {
@@ -24,9 +26,10 @@ export class AuthService {
 
   ) {}
 
+  // 1 - encrypt password
+
   async create(createUserDto: CreateUserDto): Promise<User> {
     try {
-      // 1 - encrypt password
 
       const { password, ...userData } = createUserDto;
 
@@ -49,9 +52,19 @@ export class AuthService {
     }
   }
 
-  async login(loginDto: LoginDto) {
+  async register( registerDto: RegisterUserDto ): Promise<LoginResponse> {
 
-    // 2 - ADD USSER 
+    const user = await this.create( registerDto );
+
+    return {
+      user: user,
+      token: this.getJwtToken({ id: user._id })
+    }
+  }
+
+  // 2 - ADD USSER 
+
+  async login(loginDto: LoginDto):Promise<LoginResponse> {
 
     const { email, password } = loginDto;
 
